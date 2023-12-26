@@ -1,21 +1,17 @@
 {
-  "name": "@github/webpack-bundlesize-compare-action",
+  "name": "@twk3/rollupsize-compare-action",
   "version": "0.0.0",
   "private": true,
-  "description": "GitHub action to compare the size of two webpack bundles from their stats.json output files",
+  "description": "GitHub action to compare the size of two rollup bundles from their stats.json output files",
   "main": "lib/src/main.js",
   "scripts": {
     "build": "tsc",
     "format": "prettier --write '**/*.ts'",
     "format-check": "prettier --check '**/*.ts'",
-    "lint": "eslint src/**/*.ts",
+    "lint": "eslint --fix src/**/*.ts",
     "package": "ncc build --source-map --license licenses.txt",
     "test": "jest",
     "all": "npm run build && npm run format && npm run lint && npm run package && npm test"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/actions/typescript-action.git"
   },
   "keywords": [
     "actions",
@@ -42,7 +38,6 @@
     "prettier": "^3.1.0",
     "terser": "^5.24.0",
     "ts-jest": "^29.1.1",
-    "typescript": "^5.2.2",
-    "webpack": "^5.89.0"
+    "typescript": "^5.2.2"
   }
 }

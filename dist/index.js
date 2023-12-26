@@ -82,10 +82,7 @@ exports.getChunkModuleDiff = void 0;
 const name_to_size_map_1 = __nccwpck_require__(5188);
 const webpack_stats_diff_1 = __nccwpck_require__(2572);
 function getChunkModuleDiff(oldStats, newStats) {
-    if (!oldStats.chunks || !newStats.chunks) {
-        return null;
-    }
-    return (0, webpack_stats_diff_1.webpackStatsDiff)((0, name_to_size_map_1.chunkModuleNameToSizeMap)(oldStats.chunks), (0, name_to_size_map_1.chunkModuleNameToSizeMap)(newStats.chunks));
+    return (0, webpack_stats_diff_1.webpackStatsDiff)((0, name_to_size_map_1.chunkModuleNameToSizeMap)(oldStats), (0, name_to_size_map_1.chunkModuleNameToSizeMap)(newStats));
 }
 exports.getChunkModuleDiff = getChunkModuleDiff;
 
@@ -102,7 +99,7 @@ exports.getStatsDiff = void 0;
 const name_to_size_map_1 = __nccwpck_require__(5188);
 const webpack_stats_diff_1 = __nccwpck_require__(2572);
 function getStatsDiff(oldAssetStats, newAssetStats) {
-    return (0, webpack_stats_diff_1.webpackStatsDiff)((0, name_to_size_map_1.assetNameToSizeMap)(oldAssetStats.assets), (0, name_to_size_map_1.assetNameToSizeMap)(newAssetStats.assets));
+    return (0, webpack_stats_diff_1.webpackStatsDiff)((0, name_to_size_map_1.assetNameToSizeMap)(oldAssetStats), (0, name_to_size_map_1.assetNameToSizeMap)(newAssetStats));
 }
 exports.getStatsDiff = getStatsDiff;
 
@@ -233,60 +230,51 @@ run();
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.chunkModuleNameToSizeMap = exports.assetNameToSizeMap = void 0;
-function assetNameToSizeMap(statAssets = []) {
-    return new Map(statAssets
-        // when Webpack's stats.excludeAssets is used, assets which are excluded will be grouped into an asset with type 'hidden assets'
-        .filter(it => !!it.name && it.type !== 'hidden assets')
-        .map(asset => {
-        let gzipSize = null;
-        if (asset.related && Array.isArray(asset.related)) {
-            const gzipAsset = asset.related.find(related => related.type === 'gzipped');
-            if (gzipAsset) {
-                gzipSize = gzipAsset.size;
+function findAllChildren(start = {}) {
+    return start.children ? start.children.flatMap(findAllChildren) : [start];
+}
+function trimPath(input) {
+    if (!input) {
+        return '';
+    }
+    return input.replace(/.*node_modules/, '/node_modules');
+}
+function assetNameToSizeMap(statAssets = {}) {
+    var _a;
+    return new Map((_a = statAssets === null || statAssets === void 0 ? void 0 : statAssets.tree) === null || _a === void 0 ? void 0 : _a.children.map((asset) => {
+        const children = findAllChildren(asset);
+        let size = 0;
+        let gzipSize = statAssets.options.gzip ? 0 : null;
+        for (const mod of children) {
+            size += statAssets.nodeParts[mod.uid].renderedLength;
+            if (statAssets.options.gzip) {
+                gzipSize += statAssets.nodeParts[mod.uid].gzipLengh;
             }
         }
         return [
-            asset.name,
+            trimPath(asset.name),
             {
-                size: asset.size,
+                size,
                 gzipSize
             }
         ];
     }));
 }
 exports.assetNameToSizeMap = assetNameToSizeMap;
-function chunkModuleNameToSizeMap(statChunks = []) {
-    return new Map(statChunks.flatMap(chunk => {
-        if (!chunk.modules)
-            return [];
-        return chunk.modules.flatMap(module => {
-            var _a, _b;
-            // If a module doesn't have any submodules beneath it, then just return its own size
-            // Otherwise, break each module into its submodules with their own sizes
-            if (module.modules) {
-                return module.modules.map(submodule => {
-                    var _a, _b;
-                    return [
-                        (_a = submodule.name) !== null && _a !== void 0 ? _a : '',
-                        {
-                            size: (_b = submodule.size) !== null && _b !== void 0 ? _b : 0,
-                            gzipSize: null
-                        }
-                    ];
-                });
+function chunkModuleNameToSizeMap(statChunks = {}) {
+    if (!(statChunks === null || statChunks === void 0 ? void 0 : statChunks.tree)) {
+        return new Map();
+    }
+    return new Map(findAllChildren(statChunks.tree).map((mod) => {
+        var _a;
+        const modInfo = statChunks.nodeParts[mod.uid];
+        return [
+            trimPath(statChunks.nodeMetas[modInfo.metaUid].id),
+            {
+                size: (_a = modInfo.renderedLength) !== null && _a !== void 0 ? _a : 0,
+                gzipSize: statChunks.options.gzip ? modInfo.gzipLengh : null
             }
-            else {
-                return [
-                    [
-                        (_a = module.name) !== null && _a !== void 0 ? _a : '',
-                        {
-                            size: (_b = module.size) !== null && _b !== void 0 ? _b : 0,
-                            gzipSize: null
-                        }
-                    ]
-                ];
-            }
-        });
+        ];
     }));
 }
 exports.chunkModuleNameToSizeMap = chunkModuleNameToSizeMap;
@@ -341,7 +329,7 @@ function parseStatsFileToJson(statsFilePath) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const path = (0, path_1.resolve)(process.cwd(), statsFilePath);
-            return (yield (0, json_ext_1.parseChunked)((0, fs_1.createReadStream)(path)));
+            return yield (0, json_ext_1.parseChunked)((0, fs_1.createReadStream)(path));
         }
         catch (error) {
             if (error instanceof Error) {
@@ -559,7 +547,7 @@ function getCommentBody(statsDiff, chunkModuleDiff, title) {
     return `
 ### Bundle Stats${title ? ` — ${title}` : ''}
 
-Hey there, this message comes from a [GitHub action](https://github.com/github/webpack-bundlesize-compare-action) that helps you and reviewers to understand how these changes affect the size of this project's bundle.
+Hey there, this message comes from a [GitHub action](https://github.com/twk3/rollup-size-compare-action) that helps you and reviewers to understand how these changes affect the size of this project's bundle.
 
 As this PR is updated, I'll keep you updated on how the bundle size is impacted.
 
