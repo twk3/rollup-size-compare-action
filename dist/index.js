@@ -240,7 +240,8 @@ function trimPath(input) {
     return input.replace(/.*node_modules/, '/node_modules');
 }
 function assetNameToSizeMap(statAssets = {}) {
-    return new Map(statAssets.tree.children.map((asset) => {
+    var _a;
+    return new Map((_a = statAssets === null || statAssets === void 0 ? void 0 : statAssets.tree) === null || _a === void 0 ? void 0 : _a.children.map((asset) => {
         const children = findAllChildren(asset);
         let size = 0;
         let gzipSize = statAssets.options.gzip ? 0 : null;
@@ -261,6 +262,9 @@ function assetNameToSizeMap(statAssets = {}) {
 }
 exports.assetNameToSizeMap = assetNameToSizeMap;
 function chunkModuleNameToSizeMap(statChunks = {}) {
+    if (!(statChunks === null || statChunks === void 0 ? void 0 : statChunks.tree)) {
+        return new Map();
+    }
     return new Map(findAllChildren(statChunks.tree).map((mod) => {
         var _a;
         const modInfo = statChunks.nodeParts[mod.uid];

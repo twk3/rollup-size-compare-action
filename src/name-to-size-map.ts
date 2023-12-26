@@ -14,7 +14,7 @@ function trimPath(input: string): string {
 
 export function assetNameToSizeMap(statAssets: any = {}): Map<string, Sizes> {
   return new Map(
-    statAssets.tree.children.map((asset: any) => {
+    statAssets?.tree?.children.map((asset: any) => {
       const children = findAllChildren(asset)
       let size = 0
       let gzipSize: number | null = statAssets.options.gzip ? 0 : null
@@ -39,6 +39,9 @@ export function assetNameToSizeMap(statAssets: any = {}): Map<string, Sizes> {
 export function chunkModuleNameToSizeMap(
   statChunks: any = {}
 ): Map<string, Sizes> {
+  if (!statChunks?.tree) {
+    return new Map()
+  }
   return new Map(
     findAllChildren(statChunks.tree).map((mod: any) => {
       const modInfo = statChunks.nodeParts[mod.uid]
