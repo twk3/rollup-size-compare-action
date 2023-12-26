@@ -1,31 +1,27 @@
-# Webpack bundlesize compare action
+# Rollup size compare action
 
-An action that compares 2 webpack compilation stats files, and comments on the PR with a description of the difference
+An action that compares 2 Rollup compilation stats files, and comments on the PR with a description of the difference.
+
+This is fork of the excellent [WebPack BundleSize Compare](https://github.com/github/webpack-bundlesize-compare-action) that adapts the name-to-size map to work for the raw output provided by [Rollup Plugin Visualizer](https://github.com/btd/rollup-plugin-visualizer).
 
 ## How to use it
 
-In your application, ensure you output the stats.json, from `BundleAnalyzerPlugin'
+In your application, ensure you output the stats.json, from `Rollup Plugin Visualizer'
 
 ```js
-// webpack.config.js
-const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer')
-
-// optionally you can also output compressed/gzipped stats. Requires a version >=1.1.0
-const CompressionPlugin = require('compression-webpack-plugin')
+// rollup.config.js
+// es
+import { visualizer } from "rollup-plugin-visualizer";
+// or
+// cjs
+const { visualizer } = require("rollup-plugin-visualizer");
 
 module.exports = {
   plugins: [
-    ...plugins,
-    // not required
-    new CompressionPlugin(),
-
-    // required
-    new BundleAnalyzerPlugin({
-      // generate the stats.json file
-      generateStatsFile: true
-    })
-  ]
-}
+    // template must be 'raw-data' for the stats.json file to be created
+    visualizer({ template: 'raw-data' }),
+  ],
+};
 ```
 
 Then, in your action configuration, build both the head and the branch (in any way you see fit) and pass paths to the stats.json files as inputs ot this action
@@ -92,7 +88,7 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/download-artifact@v3
-      - uses: github/webpack-bundlesize-compare-action@v1.8.2
+      - uses: twk3/rollup-size-compare-action@v1.0.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           current-stats-json-path: ./head-stats/stats.json
@@ -109,7 +105,3 @@ This action requires the `write` permission for the [`permissions.pull-requests`
 | base-stats-json-path    | The path to the base stats.json file                                                                                | true     | string |
 | github-token            | The Github token                                                                                                    | true     | string |
 | title                   | An optional addition to the title, which also helps key comments, useful if running more than 1 copy of this action | false    | string |
-
-## Example PR Comment
-
-https://github.com/github/webpack-bundlesize-compare-action/pull/50#issuecomment-1054919780

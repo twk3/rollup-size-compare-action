@@ -1,4 +1,4 @@
-name: 'Bundle comparison'
+name: 'Rollup comparison'
 description: 'Compare the bundle size between the base branch and the current branch'
 inputs:
   current-stats-json-path:
