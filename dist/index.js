@@ -10,15 +10,15 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.formatFileSizeIEC = void 0;
 const BYTES_PER_KILOBYTE = 1024;
 const denominations = [
-    'B',
-    'kB',
-    'MB',
-    'GB',
-    'TB',
-    'PB',
-    'EB',
-    'ZB',
-    'YB',
+    'B', // 1 Byte
+    'kB', // 1 Kilobyte
+    'MB', // 1 Megabyte
+    'GB', // 1 Gigabyte
+    'TB', // 1 Terabyte
+    'PB', // 1 Petabyte
+    'EB', // 1 Exabyte
+    'ZB', // 1 Zettabyte
+    'YB', // 1 Yottabyte
     'BB' // 1 brontobyte
 ];
 /**
