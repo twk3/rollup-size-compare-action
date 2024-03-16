@@ -151,8 +151,8 @@ const get_stats_diff_1 = __nccwpck_require__(5476);
 const parse_stats_file_to_json_1 = __nccwpck_require__(2495);
 const to_comment_body_1 = __nccwpck_require__(4713);
 function run() {
-    var _a;
     return __awaiter(this, void 0, void 0, function* () {
+        var _a;
         try {
             if (github_1.context.eventName !== 'pull_request' &&
                 github_1.context.eventName !== 'pull_request_target') {
