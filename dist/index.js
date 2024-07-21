@@ -7,7 +7,7 @@ require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.formatFileSizeIEC = void 0;
+exports.formatFileSizeIEC = formatFileSizeIEC;
 const BYTES_PER_KILOBYTE = 1024;
 const denominations = [
     'B', // 1 Byte
@@ -39,7 +39,6 @@ function formatFileSizeIEC(bytes, precision = 2) {
     const valueWithStrippedZeroDecimals = parseFloat(value.toFixed(precision));
     return `${valueWithStrippedZeroDecimals} ${denominations[denominationIndex]}`;
 }
-exports.formatFileSizeIEC = formatFileSizeIEC;
 
 
 /***/ }),
@@ -50,7 +49,7 @@ exports.formatFileSizeIEC = formatFileSizeIEC;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getAssetDiff = void 0;
+exports.getAssetDiff = getAssetDiff;
 function getAssetDiff(name, oldSize, newSize) {
     var _a, _b;
     return {
@@ -67,7 +66,6 @@ function getAssetDiff(name, oldSize, newSize) {
         diffPercentage: +((1 - newSize.size / oldSize.size) * -100).toFixed(5) || 0
     };
 }
-exports.getAssetDiff = getAssetDiff;
 
 
 /***/ }),
@@ -78,13 +76,12 @@ exports.getAssetDiff = getAssetDiff;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getChunkModuleDiff = void 0;
+exports.getChunkModuleDiff = getChunkModuleDiff;
 const name_to_size_map_1 = __nccwpck_require__(5188);
 const webpack_stats_diff_1 = __nccwpck_require__(2572);
 function getChunkModuleDiff(oldStats, newStats) {
     return (0, webpack_stats_diff_1.webpackStatsDiff)((0, name_to_size_map_1.chunkModuleNameToSizeMap)(oldStats), (0, name_to_size_map_1.chunkModuleNameToSizeMap)(newStats));
 }
-exports.getChunkModuleDiff = getChunkModuleDiff;
 
 
 /***/ }),
@@ -95,13 +92,12 @@ exports.getChunkModuleDiff = getChunkModuleDiff;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getStatsDiff = void 0;
+exports.getStatsDiff = getStatsDiff;
 const name_to_size_map_1 = __nccwpck_require__(5188);
 const webpack_stats_diff_1 = __nccwpck_require__(2572);
 function getStatsDiff(oldAssetStats, newAssetStats) {
     return (0, webpack_stats_diff_1.webpackStatsDiff)((0, name_to_size_map_1.assetNameToSizeMap)(oldAssetStats), (0, name_to_size_map_1.assetNameToSizeMap)(newAssetStats));
 }
-exports.getStatsDiff = getStatsDiff;
 
 
 /***/ }),
@@ -229,7 +225,8 @@ run();
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.chunkModuleNameToSizeMap = exports.assetNameToSizeMap = void 0;
+exports.assetNameToSizeMap = assetNameToSizeMap;
+exports.chunkModuleNameToSizeMap = chunkModuleNameToSizeMap;
 function findAllChildren(start = {}) {
     return start.children ? start.children.flatMap(findAllChildren) : [start];
 }
@@ -260,7 +257,6 @@ function assetNameToSizeMap(statAssets = {}) {
         ];
     }));
 }
-exports.assetNameToSizeMap = assetNameToSizeMap;
 function chunkModuleNameToSizeMap(statChunks = {}) {
     if (!(statChunks === null || statChunks === void 0 ? void 0 : statChunks.tree)) {
         return new Map();
@@ -277,7 +273,6 @@ function chunkModuleNameToSizeMap(statChunks = {}) {
         ];
     }));
 }
-exports.chunkModuleNameToSizeMap = chunkModuleNameToSizeMap;
 
 
 /***/ }),
@@ -320,7 +315,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseStatsFileToJson = void 0;
+exports.parseStatsFileToJson = parseStatsFileToJson;
 const fs_1 = __nccwpck_require__(7147);
 const path_1 = __nccwpck_require__(1017);
 const json_ext_1 = __nccwpck_require__(1451);
@@ -339,7 +334,6 @@ function parseStatsFileToJson(statsFilePath) {
         }
     });
 }
-exports.parseStatsFileToJson = parseStatsFileToJson;
 
 
 /***/ }),
@@ -350,7 +344,9 @@ exports.parseStatsFileToJson = parseStatsFileToJson;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.printTotalAssetTable = exports.printChunkModulesTable = exports.printAssetTablesByGroup = void 0;
+exports.printAssetTablesByGroup = printAssetTablesByGroup;
+exports.printChunkModulesTable = printChunkModulesTable;
+exports.printTotalAssetTable = printTotalAssetTable;
 const file_sizes_1 = __nccwpck_require__(5313);
 function conditionalPercentage(number) {
     if ([Infinity, -Infinity].includes(number)) {
@@ -444,7 +440,6 @@ ${assets
     })
         .join('\n\n');
 }
-exports.printAssetTablesByGroup = printAssetTablesByGroup;
 const getDiffEmoji = (diff) => diff.diffPercentage === Infinity
     ? '🆕'
     : diff.diffPercentage <= -100
@@ -504,14 +499,12 @@ ${changedModules
 </details>
 `;
 }
-exports.printChunkModulesTable = printChunkModulesTable;
 function printTotalAssetTable(statsDiff) {
     return `**Total**
 
 ${TOTAL_HEADERS}
 ${printAssetTableRow(statsDiff.total)}`;
 }
-exports.printTotalAssetTable = printTotalAssetTable;
 
 
 /***/ }),
@@ -522,11 +515,10 @@ exports.printTotalAssetTable = printTotalAssetTable;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.sortDiffDescending = void 0;
+exports.sortDiffDescending = sortDiffDescending;
 function sortDiffDescending(items) {
     return items.sort((diff1, diff2) => Math.abs(diff2.diff) - Math.abs(diff1.diff));
 }
-exports.sortDiffDescending = sortDiffDescending;
 
 
 /***/ }),
@@ -537,12 +529,12 @@ exports.sortDiffDescending = sortDiffDescending;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getCommentBody = exports.getIdentifierComment = void 0;
+exports.getIdentifierComment = getIdentifierComment;
+exports.getCommentBody = getCommentBody;
 const print_markdown_1 = __nccwpck_require__(9761);
 function getIdentifierComment(key) {
     return `<!--- bundlestats-action-comment${key ? ` key:${key}` : ''} --->`;
 }
-exports.getIdentifierComment = getIdentifierComment;
 function getCommentBody(statsDiff, chunkModuleDiff, title) {
     return `
 ### Bundle Stats${title ? ` — ${title}` : ''}
@@ -566,7 +558,6 @@ ${(0, print_markdown_1.printAssetTablesByGroup)(statsDiff)}
 ${getIdentifierComment(title)}
 `;
 }
-exports.getCommentBody = getCommentBody;
 
 
 /***/ }),
@@ -577,7 +568,7 @@ exports.getCommentBody = getCommentBody;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.webpackStatsDiff = void 0;
+exports.webpackStatsDiff = webpackStatsDiff;
 const get_asset_diff_1 = __nccwpck_require__(8075);
 const sort_diff_descending_1 = __nccwpck_require__(2458);
 function webpackStatsDiff(oldAssets, newAssets) {
@@ -632,7 +623,6 @@ function webpackStatsDiff(oldAssets, newAssets) {
             : `${oldFilesCount} → ${newFilesCount}`, { size: oldSizeTotal, gzipSize: oldGzipSizeTotal }, { size: newSizeTotal, gzipSize: newGzipSizeTotal })
     };
 }
-exports.webpackStatsDiff = webpackStatsDiff;
 
 
 /***/ }),
