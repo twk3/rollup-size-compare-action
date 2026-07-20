@@ -1,5 +1,4 @@
 import * as core from '@actions/core'
-import {context, getOctokit} from '@actions/github'
 import {getChunkModuleDiff} from './get-chunk-module-diff'
 import {getStatsDiff} from './get-stats-diff'
 import {parseStatsFileToJson} from './parse-stats-file-to-json'
@@ -7,6 +6,13 @@ import {getCommentBody, getIdentifierComment} from './to-comment-body'
 
 async function run(): Promise<void> {
   try {
+    // @actions/github is ESM-only, so it must be loaded via dynamic import
+    // from this CommonJS module. The eager webpack mode keeps it inlined in
+    // the single ncc bundle rather than emitting a separate async chunk.
+    const {context, getOctokit} = await import(
+      /* webpackMode: "eager" */ '@actions/github'
+    )
+
     if (
       context.eventName !== 'pull_request' &&
       context.eventName !== 'pull_request_target'
