@@ -1,4 +1,3 @@
-import * as core from '@actions/core'
 import {getChunkModuleDiff} from './get-chunk-module-diff'
 import {getStatsDiff} from './get-stats-diff'
 import {parseStatsFileToJson} from './parse-stats-file-to-json'
@@ -6,9 +5,11 @@ import {getCommentBody, getIdentifierComment} from './to-comment-body'
 
 async function run(): Promise<void> {
   try {
-    // @actions/github is ESM-only, so it must be loaded via dynamic import
-    // from this CommonJS module. The eager webpack mode keeps it inlined in
-    // the single ncc bundle rather than emitting a separate async chunk.
+    // @actions/core and @actions/github are ESM-only, so they must be loaded
+    // via dynamic import from this CommonJS module. The eager webpack mode
+    // keeps them inlined in the single ncc bundle rather than emitting a
+    // separate async chunk.
+    const core = await import(/* webpackMode: "eager" */ '@actions/core')
     const {context, getOctokit} = await import(
       /* webpackMode: "eager" */ '@actions/github'
     )
@@ -93,7 +94,10 @@ async function run(): Promise<void> {
 
     await Promise.all(promises)
   } catch (error) {
-    if (error instanceof Error) core.setFailed(error.message)
+    if (error instanceof Error) {
+      const core = await import(/* webpackMode: "eager" */ '@actions/core')
+      core.setFailed(error.message)
+    }
   }
 }
 
