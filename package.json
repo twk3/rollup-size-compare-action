@@ -40,6 +40,6 @@
     "prettier": "^3.9.6",
     "terser": "^5.49.0",
     "ts-jest": "^29.4.11",
-    "typescript": "^5.8.3"
+    "typescript": "^6.0.3"
   }
 }
