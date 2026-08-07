@@ -28,8 +28,8 @@
   "devDependencies": {
     "@stylistic/eslint-plugin": "^5.10.0",
     "@types/node": "^26.1.1",
-    "@typescript-eslint/eslint-plugin": "^8.65.0",
-    "@typescript-eslint/parser": "^8.31.1",
+    "@typescript-eslint/eslint-plugin": "^8.66.0",
+    "@typescript-eslint/parser": "^8.66.0",
     "@vercel/ncc": "^0.44.1",
     "eslint": "^10.8.0",
     "eslint-plugin-github": "^6.1.2",
